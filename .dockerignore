@@ -1,0 +1,49 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Dependency directories
+jspm_packages/
+
+# Build scripts
+scripts/
+
+# Build output
+dist/
+build/
+out/
+
+# Environment files
+.env
+.env.*
+.venv
+
+# Local only files
+*.sqlite3
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Docker files
+Dockerfile*
+docker-compose*
+
+# Misc
+*.tgz
+*.gz
+*.zip
+*.swp
+.idea/
+.vscode/
+coverage/
+.cache/
+__pycache__/
+tmp/
+temp/
+# Dagster
+.tmp*

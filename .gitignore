@@ -135,7 +135,9 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+.env*
+# Keep example env file
+!.env.example
 .envrc
 .venv
 env/
@@ -205,3 +207,6 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Dagster
+.tmp_dagster*

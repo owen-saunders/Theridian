@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: python run.py --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - APP_DATABASE_HOST=${APP_DATABASE_HOST}
+      - APP_DATABASE_PORT=${APP_DATABASE_PORT}
+      - APP_DATABASE_NAME=${APP_DATABASE_NAME}
+      - APP_DATABASE_USER=${APP_DATABASE_USER}
+      - APP_DATABASE_PASSWORD=${APP_DATABASE_PASSWORD}
+      - REDIS_URL=${REDIS_URL}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      # - SENTRY_DSN=${SENTRY_DSN}
+      - DJANGO_SETTINGS_MODULE=core.settings.production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: celery -A core worker -l info --concurrency=2
+    environment:
+      - DEBUG=False
+      - APP_DATABASE_HOST=${APP_DATABASE_HOST}
+      - APP_DATABASE_PORT=${APP_DATABASE_PORT}
+      - APP_DATABASE_NAME=${APP_DATABASE_NAME}
+      - APP_DATABASE_USER=${APP_DATABASE_USER}
+      - APP_DATABASE_PASSWORD=${APP_DATABASE_PASSWORD}
+      - REDIS_URL=${REDIS_URL}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - DJANGO_SETTINGS_MODULE=core.settings.production
+    restart: unless-stopped
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: celery -A core beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    environment:
+      - DEBUG=False
+      - APP_DATABASE_HOST=${APP_DATABASE_HOST}
+      - APP_DATABASE_PORT=${APP_DATABASE_PORT}
+      - APP_DATABASE_NAME=${APP_DATABASE_NAME}
+      - APP_DATABASE_USER=${APP_DATABASE_USER}
+      - APP_DATABASE_PASSWORD=${APP_DATABASE_PASSWORD}
+      - REDIS_URL=${REDIS_URL}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - DJANGO_SETTINGS_MODULE=core.settings.production
+    restart: unless-stopped
+
+  dagster:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: dagster-webserver -h 0.0.0.0 -p 3000 -w workspace.yml
+    ports:
+      - "3000:3000"
+    environment:
+      - DEBUG=False
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - DJANGO_SETTINGS_MODULE=core.settings.production
+    restart: unless-stopped
