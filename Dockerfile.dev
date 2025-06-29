@@ -152,7 +152,7 @@ RUN apk add --no-cache --virtual .deps musl-dev libev-dev gcc g++ \
     && rm -rf $POETRY_CACHE_DIR \
     && pip uninstall -y poetry \
     && apk del .deps \
-    && apk add --no-cache libev postgresql-client build-base
+    && apk add --no-cache libev postgresql-client build-base curl
 
 
 COPY . /code/
