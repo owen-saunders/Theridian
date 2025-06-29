@@ -85,7 +85,7 @@ touch core/settings/__init__.py
 
 # Start Docker services
 print_status "Starting Docker services..."
-docker-compose -f docker-compose.dev.yml up -d
+docker-compose --env-file .env.docker -f docker-compose.dev.yml up -d
 
 # Wait for services to be ready
 print_status "Waiting for services to be ready..."

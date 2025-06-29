@@ -1,7 +1,10 @@
 """
 Development settings for core project.
 """
-from .base import *
+import sys
+
+# from .base import *
+from .base import INSTALLED_APPS, LOGGING, MIDDLEWARE, THIRD_PARTY_APPS, dj_database_url
 
 print("[WARNING] Using development settings")
 
@@ -14,9 +17,14 @@ ALLOWED_HOSTS = ["*"]
 # CORS settings for development
 CORS_ALLOW_ALL_ORIGINS = True
 
-THIRD_PARTY_APPS += [
-    "debug_toolbar",
-]
+# Check if running python manage.py test
+if "test" in sys.argv or "test" in "".join(sys.argv):
+    print("[WARNING] Running tests, using test settings. Debug Toolbar disabled.")
+    DEBUG = False
+else:
+    THIRD_PARTY_APPS += [
+        "debug_toolbar",
+    ]
 
 # Database
 DATABASES = {
@@ -54,7 +62,6 @@ LOGGING["root"]["level"] = "DEBUG"
 LOGGING["loggers"]["apps"]["level"] = "DEBUG"
 
 # Disable migrations during tests
-import sys
 
 if "test" in sys.argv:
     DATABASES["default"]["ENGINE"] = "django.db.backends.sqlite3"

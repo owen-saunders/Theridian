@@ -2,11 +2,13 @@
 Production settings for core project.
 """
 import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-from .base import *
+# ignore flake F405 errors in file
+# flake8: noqa: F405, F403
+from .base import *  # type: ignore
 
 print("[WARNING] Using production settings")
 
@@ -40,7 +42,14 @@ DATABASES["default"]["CONN_MAX_AGE"] = 60
 
 
 # Static files for production
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Email configuration for production
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
